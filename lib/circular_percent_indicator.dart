@@ -73,6 +73,9 @@ class CircularPercentIndicator extends StatefulWidget {
   /// set true if you want to animate the linear from the last percent value you set
   final bool animateFromLastPercent;
 
+  /// set to false if you do not want the default behavior of initially animating up from 0%
+  final bool animateToInitialPercent;
+
   /// set false if you don't want to preserve the state of the widget
   final bool addAutomaticKeepAlive;
 
@@ -129,6 +132,7 @@ class CircularPercentIndicator extends StatefulWidget {
     this.arcBackgroundColor,
     this.arcType,
     this.animateFromLastPercent = false,
+    this.animateToInitialPercent = true,
     this.reverse = false,
     this.curve = Curves.linear,
     this.maskFilter,
@@ -179,11 +183,12 @@ class _CircularPercentIndicatorState extends State<CircularPercentIndicator>
   @override
   void initState() {
     if (widget.animation) {
+      if (!widget.animateToInitialPercent) _percent = widget.percent;
       _animationController = AnimationController(
         vsync: this,
         duration: Duration(milliseconds: widget.animationDuration),
       );
-      _animation = Tween(begin: 0.0, end: widget.percent).animate(
+      _animation = Tween(begin: _percent, end: widget.percent).animate(
         CurvedAnimation(parent: _animationController!, curve: widget.curve),
       )..addListener(() {
           setState(() {
@@ -281,25 +286,23 @@ class _CircularPercentIndicatorState extends State<CircularPercentIndicator>
                   : SizedBox.expand(),
             ),
             if (widget.widgetIndicator != null && widget.animation)
-              Positioned.fill(
+              Transform.rotate(
+                angle: radians(
+                        (widget.circularStrokeCap != CircularStrokeCap.butt &&
+                                widget.reverse)
+                            ? -15
+                            : 0)
+                    .toDouble(),
                 child: Transform.rotate(
-                  angle: radians(
-                          (widget.circularStrokeCap != CircularStrokeCap.butt &&
-                                  widget.reverse)
-                              ? -15
-                              : 0)
-                      .toDouble(),
-                  child: Transform.rotate(
-                    angle: getCurrentPercent(_percent),
-                    child: Transform.translate(
-                      offset: Offset(
-                        (widget.circularStrokeCap != CircularStrokeCap.butt)
-                            ? widget.lineWidth / 2
-                            : 0,
-                        (-widget.radius + widget.lineWidth / 2),
-                      ),
-                      child: widget.widgetIndicator,
+                  angle: getCurrentPercent(_percent),
+                  child: Transform.translate(
+                    offset: Offset(
+                      (widget.circularStrokeCap != CircularStrokeCap.butt)
+                          ? widget.lineWidth / 2
+                          : 0,
+                      (-widget.radius + widget.lineWidth / 2),
                     ),
+                    child: widget.widgetIndicator,
                   ),
                 ),
               ),
