@@ -259,6 +259,7 @@ class _CircularPercentIndicatorState extends State<CircularPercentIndicator>
         height: _diameter,
         width: _diameter,
         child: Stack(
+          alignment: Alignment.center,
           children: [
             CustomPaint(
               painter: _CirclePainter(
