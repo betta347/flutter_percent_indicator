@@ -295,7 +295,7 @@ class _CircularPercentIndicatorState extends State<CircularPercentIndicator>
                             : 0)
                     .toDouble(),
                 child: Transform.rotate(
-                  angle: getCurrentPercent(_percent)-15,
+                  angle: getCurrentPercent(_percent),
                   child: Transform.translate(
                     offset: Offset(
                       (widget.circularStrokeCap != CircularStrokeCap.butt)
